@@ -1,12 +1,15 @@
 %% Description
 % The training wrapper for caffe
-% [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode )
+% [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode, save_intermediate_best )
 % --- INPUTS
 % solver_filename = filename of the solver used
 % best_snapshot_prefix = prefix (with the full path) for the best snapshots
 % gpu_mode = gpu or cpu mode:
 %   0 = cpu
 %   1 = gpu
+% save_intermediate_best = should we save every time we have a better
+%   result
+% 
 % --- OUTPUTS
 % accuracy = vector of accuracies observed
 % iterations = iterations at which the accuracies were observed
@@ -18,7 +21,7 @@
 % if you don't want to save intermediate results set max_iter property of
 % the solver to some very high value
 %% Execution
-function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode )
+function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode, save_intermediate_best )
     caffe.reset_all();
     
     if gpu_mode
@@ -57,6 +60,10 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
            best_net  = solver.net;
            best_accuracy = stat.accuracy(step_i);
            best_iter = solver.iter;
+           
+           if save_intermediate_best
+               best_net.save([best_snapshot_prefix sprintf('__iter_%06d__acc_%5.3f.caffemodel', best_iter, best_accuracy) ]);
+           end
         end
         
         fprintf('Iter = %d TRAIN: loss = %e VAL: Accuracy: cur = %f best: %f (iter: %d) \n', ...
