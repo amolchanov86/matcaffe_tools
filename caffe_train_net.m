@@ -27,7 +27,7 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
         caffe.set_mode_cpu();
     end
     
-    solver_props = caffe_read_prototxt(solver_filename);
+    solver_props = caffe_read_solverprototxt(solver_filename);
     test_interval = str2num( solver_props.test_interval );
     max_iter = str2num(solver_props.max_iter);
     
