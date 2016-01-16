@@ -55,7 +55,11 @@ lay_indx = lay_indx + 1;
 net_descr{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr{lay_indx-1}.name );
 
 lay_indx = lay_indx + 1;
-net_descr{lay_indx} = caffe_layer_pool_def( block_indx );
+net_descr{lay_indx} = caffe_layer_pool_def( block_indx );lay_indx = lay_indx + 1;
+net_descr{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr{lay_indx-1}.name );
+
+lay_indx = lay_indx + 1;
+net_descr{lay_indx} = caffe_layer_drop_def( block_indx );
 net_descr{lay_indx}.pooling_param.kernel_h = 1;
 net_descr{lay_indx}.pooling_param.kernel_w = 2;
 net_descr{lay_indx}.pooling_param.stride_h = 1;
