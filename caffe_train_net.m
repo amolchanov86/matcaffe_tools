@@ -34,6 +34,12 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
     test_interval = str2num( solver_props.test_interval );
     max_iter = str2num(solver_props.max_iter);
     
+    [snapshot_folder, snapshot_name_base] = fileparts (best_snapshot_prefix);
+    if ~exist(snapshot_folder, 'dir')
+       fprintf('%s : creating folder %s ... \n', mfilename, snapshot_folder);
+       mkdir(snapshot_folder); 
+    end
+    
     %Load the solver
     solver = caffe.Solver(solver_filename);
     
