@@ -1,4 +1,4 @@
-function [ props ] = caffe_read_solverprototxt( prototxt_filename )
+function [ props ] = caffe_read_solverprototxt( prototxt_filename, varargin )
 %% Description
 % The function reads solver's *.prototxt file and returns the structure
 % --- INPUTS:
@@ -7,20 +7,24 @@ function [ props ] = caffe_read_solverprototxt( prototxt_filename )
 % props = structure with properties
 % 
 %% Execution
-    print_res = 1;
-
+    var_i = 1;        
+    print_res = 0;
+    if length(varargin) >= var_i
+        print_res = varargin{var_i};
+    end
+        
     lines = textread(prototxt_filename, '%s', 'delimiter', '\n');   
     
-    fprintf('File loaded = %s \n', prototxt_filename);
-    fprintf('lines = %d \n', length(lines));
+    fprintf('%s : File loaded = %s lines = %d \n', mfilename, prototxt_filename, length(lines));
     
     %Get rid of comments
     cur_line = 0;
     for line_i = 1:length(lines)    
-        comment_start = strfind(lines(line_i), '#');
+        comment_start{line_i} = strfind(lines{line_i}, '#');
         
-        if length(comment_start{1}) > 0
-            lines{line_i} = lines{line_i}((comment_start{1}+1):end);
+        if length(comment_start{line_i}) > 0
+            lines{line_i} = lines{line_i}(1:(comment_start{line_i}-1));
+%             fprintf('Comment starts = %d Line = %s \n', comment_start{line_i}, lines{line_i});
         else
             lines{line_i} = lines{line_i};
         end

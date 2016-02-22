@@ -20,8 +20,10 @@
 %% Remarks:
 % if you don't want to save intermediate results set max_iter property of
 % the solver to some very high value
-%% Execution
-function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode, save_intermediate_best )
+
+function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, best_snapshot_prefix, gpu_mode, save_intermediate_best )   
+    %% Execution
+
     caffe.reset_all();
     
     if gpu_mode
@@ -41,6 +43,7 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
     end
     
     %Load the solver
+    fprintf('%s : Loading solver = %s ... \n', mfilename, solver_filename);
     solver = caffe.Solver(solver_filename);
     
     %Init vars
@@ -52,6 +55,8 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
     best_accuracy = solver.test_nets(1).blobs('accuracy').get_data();
     best_iter = 0;
     best_net = solver.net;
+    stat.best_snapshot_name = '';
+    prev_best_snapshot_name = '';
     
     %Iterate
     step_i = 0;
@@ -60,16 +65,22 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
         solver.step(test_interval);
         stat.accuracy(step_i) = solver.test_nets(1).blobs('accuracy').get_data();
         stat.loss(step_i) = solver.net(1).blobs('loss').get_data();
+        stat.loss_test(step_i) = solver.test_nets(1).blobs('loss').get_data();
         stat.iterations(step_i) = solver.iter;
         
-        if stat.accuracy(step_i) > best_accuracy
+        if stat.accuracy(step_i) > best_accuracy || length(stat.best_snapshot_name) == 0
            best_net  = solver.net;
            best_accuracy = stat.accuracy(step_i);
            best_iter = solver.iter;
+
+           prev_best_snapshot_name = stat.best_snapshot_name;
+           stat.best_snapshot_name = [best_snapshot_prefix sprintf('__iter_%06d__acc_%5.3f.caffemodel', best_iter, best_accuracy) ];
+           best_net.save(stat.best_snapshot_name);
            
-           if save_intermediate_best
-               best_net.save([best_snapshot_prefix sprintf('__iter_%06d__acc_%5.3f.caffemodel', best_iter, best_accuracy) ]);
+           if ~save_intermediate_best && length(prev_best_snapshot_name) > 0
+              delete(prev_best_snapshot_name);
            end
+           
         end
         
         fprintf('Iter = %d TRAIN: loss = %e VAL: Accuracy: cur = %f best: %f (iter: %d) \n', ...
@@ -80,8 +91,9 @@ function [ best_accuracy, best_iter, stat ] = caffe_train_net( solver_filename, 
     %[best_accuracy, best_indx] = max(accuracy);
     %best_iter = iterations(best_indx);
     
-    % Saving the best snapshot
-    best_net.save([best_snapshot_prefix sprintf('__iter_%06d__acc_%5.3f.caffemodel', best_iter, best_accuracy) ]);
+    % Saving the best snapshot (old version)
+%     stat.best_snapshot_name = [best_snapshot_prefix sprintf('__iter_%06d__acc_%5.3f.caffemodel', best_iter, best_accuracy) ];
+%     best_net.save(stat.best_snapshot_name);
     
 end
 
