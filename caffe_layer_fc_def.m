@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_fc_def( indx )
+function [ layer_str ] = caffe_layer_fc_def( name, varargin )
 %% Description:
 % default initialization of the InnerProduct (fully connected) layer
 % --- INPUT:
@@ -6,9 +6,20 @@ function [ layer_str ] = caffe_layer_fc_def( indx )
 % --- OUTPUT:
 % layer_str = structure describing a layer
 %
-layer_str.name = sprintf('fc%d', indx);
+if isstr(name)
+    layer_str.name = name;
+else
+    layer_str.name = sprintf('fc%d', name);
+end
 layer_str.type = 'InnerProduct';
-layer_str.bottom = sprintf('conv%d', max(indx - 1, 0 ) );
+
+var_i = 1;
+if length(varargin) >= var_i
+    layer_str.bottom = varargin{var_i};
+else
+    layer_str.bottom = sprintf('conv%d', max(name - 1, 0 ) );
+end
+    
 layer_str.top = layer_str.name;
 
 layer_str.param{1}.lr_mult = 1;

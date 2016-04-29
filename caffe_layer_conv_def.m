@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_conv_def( indx )
+function [ layer_str ] = caffe_layer_conv_def( name, varargin )
 %% Description
 % Generates default Convolution layer values given layer name
 % --- INPUT:
@@ -7,11 +7,23 @@ function [ layer_str ] = caffe_layer_conv_def( indx )
 % layer_str = structure describing a layer
 %
 %% Execution
+%Name
+if isstr(name)
+    layer_str.name = name;
+else
+    layer_str.name = sprintf('conv%d', name);
+end
 conv_name = 'Convolution';
-
-layer_str.name = sprintf('conv%d', indx);
 layer_str.type = conv_name;
-layer_str.bottom = 'data';
+
+% Bottom layer
+var_i = 1;
+if length(varargin) >= var_i
+    layer_str.bottom = varargin{var_i};
+else
+    layer_str.bottom = 'data';
+end
+
 layer_str.top = layer_str.name;
 
 layer_str.param{1}.lr_mult = 1;

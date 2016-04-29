@@ -42,9 +42,9 @@ net_descr.head_deploy.input_shape.dim{4} = 31;
 %% --- Body
 
 % --- Conv 0
-lay_indx = 0;
+lay_indx = 0;%Index of every layer
 lay_indx = lay_indx + 1;
-block_indx = 0;
+block_indx = 0; %For every block of layers, example: {FC + ReLU + Dropout}  
 net_descr.body{lay_indx} = caffe_layer_conv_def( block_indx );
 net_descr.body{lay_indx}.bottom = 'data';
 net_descr.body{lay_indx}.convolution_param.num_output = 64;

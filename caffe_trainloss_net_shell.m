@@ -61,7 +61,7 @@ system(['caffe train --solver=' solver_filename ' 2>' log_filename]);
 % --- Pick best iteration
 best_iter_i = 0;
 best_iter = 0;
-best_loss = 99999999999999999999999999999999;
+best_loss = realmax('single');
 for i=1:length(test_stat)
     if (test_stat{i}.loss < best_loss) || (best_iter == 0)
         best_loss =  test_stat{i}.loss;

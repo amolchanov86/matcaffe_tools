@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_drop_def( indx )
+function [ layer_str ] = caffe_layer_drop_def( name, varargin )
 %% Description:
 % default initialization of the pool layer
 % --- INPUT:
@@ -8,9 +8,21 @@ function [ layer_str ] = caffe_layer_drop_def( indx )
 %
 %% Execution:
 
-layer_str.name = sprintf('drop%d', indx);
+if isstr(name)
+    layer_str.name = name;
+else
+    layer_str.name = sprintf('drop%d', name);
+end
+
 layer_str.type = 'Dropout';
-layer_str.bottom = sprintf('fc%d', indx);
+
+var_i = 1;
+if length(varargin) >= var_i
+    layer_str.bottom = varargin{var_i};
+else
+    layer_str.bottom = sprintf('fc%d', name);
+end
+
 layer_str.top = layer_str.bottom;
 
 layer_str.dropout_param.dropout_ratio = 0.5;

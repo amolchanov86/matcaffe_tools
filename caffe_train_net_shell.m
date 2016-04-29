@@ -69,7 +69,7 @@ for i=1:length(test_stat)
     end
 end
 
-model_ext = '.caffemodel';
+model_ext  = '.caffemodel';
 solver_ext = '.solverstate';
 
 best_snapshot_temp_name = sprintf('%s_iter_%d', ...
