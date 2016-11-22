@@ -138,13 +138,19 @@ indent_cur = '';
     
     % Iterate through layers writing them into the file
     fprintf('%s : saving body and loss ... \n', mfilename);
-    for layer_i=1:length(net_descr)
-        if isfield(net_descr{layer_i}, 'name')
-            fprintf('Layer %d: name = %s ...\n', layer_i, net_descr{layer_i}.name );
+    % some cells are cell array themself, so we will flatten them
+    net_descr_ = {};
+    for i_layer = 1:length(net_descr)
+        net_descr_ = [net_descr_ net_descr{i_layer}];
+    end
+    
+    for layer_i=1:length(net_descr_)
+        if isfield(net_descr_{layer_i}, 'name')
+            fprintf('Layer %d: name = %s ...\n', layer_i, net_descr_{layer_i}.name );
         else
             fprintf('Layer %d ... \n', layer_i);
         end
-        caffe_save_net_str( fileID, net_descr{layer_i}, 'layer', indent, indent_cur);
+        caffe_save_net_str( fileID, net_descr_{layer_i}, 'layer', indent, indent_cur);
     end
 
     fclose(fileID);

@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_accuracy_def( bottom_name )
+function [ layer_str ] = caffe_layer_accuracy_def( name, bottom_name )
 %% Description:
 % default initialization of the Accuracy layer
 % --- INPUT:
@@ -8,7 +8,7 @@ function [ layer_str ] = caffe_layer_accuracy_def( bottom_name )
 %
 %% Execution:
 
-layer_str.name = 'accuracy';
+layer_str.name = name;
 layer_str.type = 'Accuracy';
 layer_str.bottom{1} = bottom_name;
 layer_str.bottom{2} = 'label';

@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_loss_def( bottom_name )
+function [ layer_str ] = caffe_layer_loss_def( name, bottom_names )
 %% Description:
 % default initialization of the Loss (SoftmaxWithLoss) layer
 % --- INPUT:
@@ -8,10 +8,9 @@ function [ layer_str ] = caffe_layer_loss_def( bottom_name )
 %
 %% Execution:
 
-layer_str.name = 'loss';
+layer_str.name = name;
 layer_str.type = 'SoftmaxWithLoss';
-layer_str.bottom{1} = bottom_name;
-layer_str.bottom{2} = 'label';
+layer_str.bottom = bottom_names;
 layer_str.top = layer_str.name;
 
 % layer {
