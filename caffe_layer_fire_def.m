@@ -27,8 +27,9 @@ blob_name = names.squeeze1;
 layer_cells{end+1} = caffe_layer_conv_def(blob_name, bottom, 1, squeeze, add_mult);
 if add_batch_norm
     % disable bias in previous conv layer
-    % TODO : in case add_mult=true we might remove the relevant part for bias term
     layer_cells{end}.convolution_param.bias_term = 'false';
+    layer_cells{end}.convolution_param = rmfield(...
+        layer_cells{end}.convolution_param, 'bias_filler');
     
     bn_bottom = blob_name;
     blob_name = [blob_name '_bn'];
@@ -37,16 +38,19 @@ end
 layer_cells{end+1} = caffe_layer_relu_def(names.squeeze1_relu, blob_name);
 
 % expand1x1 & expand3x3
-layer_cells{end+1} = caffe_layer_conv_def(names.expand1, names.squeeze1, 1, expand1, add_mult);
-layer_cells{end+1} = caffe_layer_conv_def(names.expand3, names.squeeze1, 3, expand3, add_mult);
+layer_cells{end+1} = caffe_layer_conv_def(names.expand1, blob_name, 1, expand1, add_mult);
+layer_cells{end+1} = caffe_layer_conv_def(names.expand3, blob_name, 3, expand3, add_mult, 'pad', 1);
 layer_cells{end+1} = caffe_layer_concat_def(names.concat, {names.expand1, names.expand3});
 
 blob_name = layer_cells{end}.top;
 if add_batch_norm
     % disable bias in previous conv layers
-    % TODO : in case add_mult=true we might remove the relevant part for bias term
     layer_cells{end-2}.convolution_param.bias_term = 'false';
+    layer_cells{end-2}.convolution_param = ...
+        rmfield(layer_cells{end-2}.convolution_param, 'bias_filler');
     layer_cells{end-1}.convolution_param.bias_term = 'false';
+    layer_cells{end-1}.convolution_param = ...
+        rmfield(layer_cells{end-1}.convolution_param, 'bias_filler');
     
     bn_bottom = blob_name;
     blob_name = [bn_bottom '_bn'];
