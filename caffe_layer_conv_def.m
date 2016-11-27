@@ -28,17 +28,17 @@ if add_mult
 end
 
 layer_str.convolution_param.num_output = num_output;
-layer_str.convolution_param.kernel = kernel_size;
+layer_str.convolution_param.kernel_size = kernel_size;
 
 for i_param = 1:2:length(varargin)
     param_name = varargin{i_param};
     param_value = varargin{i_param+1};
     layer_str.convolution_param.(param_name) = param_value;
-    if isfield(layer_str.convolution_param, 'kernel') && ...
+    if isfield(layer_str.convolution_param, 'kernel_size') && ...
             (strcmp(param_name, 'kernel_h') || strcmp(param_name, 'kernel_w'))
         % remove kernel field
         layer_str.convolution_param = rmfield(...
-            layer_str.convolution_param, 'kernel');
+            layer_str.convolution_param, 'kernel_size');
     end
 end
 

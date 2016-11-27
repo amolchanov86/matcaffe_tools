@@ -24,9 +24,10 @@ fileID = fopen( [filename extension], 'w');
 parameter_names = fieldnames(solver_descr);
 for var_i=1:length(parameter_names)
    is_solvermode =  strcmp( 'solver_mode', parameter_names{var_i} );
-   [num, status] = str2num( solver_descr.(parameter_names{var_i}) );
+   is_logical = any(strcmp( {'true', 'false'}, solver_descr.(parameter_names{var_i})));
+   num = str2double( solver_descr.(parameter_names{var_i}) );
    
-   if status || is_solvermode
+   if is_logical || is_solvermode || ~isnan(num)
       fprintf(fileID, '%s : %s\n', parameter_names{var_i}, solver_descr.(parameter_names{var_i}) ); 
    else
       fprintf(fileID, '%s : \"%s\"\n', parameter_names{var_i}, solver_descr.(parameter_names{var_i}) ); 

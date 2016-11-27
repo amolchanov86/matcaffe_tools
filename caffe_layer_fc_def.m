@@ -25,7 +25,9 @@ end
 
 layer_str.inner_product_param.num_output = num_output;
 
-layer_str.inner_product_param.weight_filler.type = 'xavier';
+layer_str.inner_product_param.weight_filler.type = 'gaussian';
+layer_str.inner_product_param.weight_filler.std = 0.001;
+
 layer_str.inner_product_param.bias_filler.type   = 'constant';
 layer_str.inner_product_param.bias_filler.value   = 0;
 

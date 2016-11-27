@@ -78,11 +78,12 @@ net_descr.body{end}.pooling_param = struct('pool', 'AVE', 'global_pooling', 'tru
 %% --- Footer (losses and accuracies)
 % --- Train/Val
 net_descr.loss{1} = caffe_layer_loss_def('loss', {'pool10', 'label'});
-net_descr.loss{2} = caffe_layer_accuracy_def('accuracy', 'pool10');
-net_descr.loss{2} = rmfield(net_descr.loss{2}, 'include');
-net_descr.loss{3} = caffe_layer_accuracy_def('accuracy_top5', 'pool10');
-net_descr.loss{3} = rmfield(net_descr.loss{3}, 'include');
+net_descr.loss{2} = caffe_layer_accuracy_def('accuracy', {'pool10', 'label'});
+net_descr.loss{3} = caffe_layer_accuracy_def('accuracy_top5', {'pool10', 'label'});
+
 net_descr.loss{3}.accuracy_param = struct('top_k', 5);
+net_descr.loss{2} = rmfield(net_descr.loss{2}, 'include');
+net_descr.loss{3} = rmfield(net_descr.loss{3}, 'include');
 % --- Deploy
 net_descr.loss_deploy{1} = caffe_layer_loss_def('prob', {'pool10'});
 net_descr.loss_deploy{1}.type = 'Softmax';

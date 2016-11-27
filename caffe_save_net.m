@@ -1,4 +1,4 @@
-function [ out ] = caffe_save_net( filename, header, net_descr )
+function [ out ] = caffe_save_net( filename, header, net_descr, data_block )
 %% Description
 % Function generates *.prototxt file from structure provided
 % Net desctiption is organized as following:
@@ -51,10 +51,14 @@ indent_cur = '';
         end
     end
 
-    function caffe_save_net_head( file_id, str_in, indent, indent_cur)
+    function caffe_save_net_head( file_id, str_in, indent, indent_cur, data_blob)
         %Saving the name as a first parameter (some minor fool-proof)
         caffe_save_net_param( file_id, str_in.name, 'name', '', indent_cur);
         str_in = rmfield( str_in, 'name');
+        
+        if exist('data_blob', 'var') && ~isempty(data_blob)
+            fprintf(file_id, data_blob);
+        end
         
         %Saving the rest of parameters
         parameter_names = fieldnames(str_in);
@@ -134,7 +138,11 @@ indent_cur = '';
 
     % Filling in the header
     fprintf('%s : saving header ... \n', mfilename);
-    caffe_save_net_head( fileID, header, indent, indent_cur);
+    if exist('data_block', 'var')
+        caffe_save_net_head( fileID, header, indent, indent_cur, data_block);
+    else
+        caffe_save_net_head( fileID, header, indent, indent_cur);
+    end
     
     % Iterate through layers writing them into the file
     fprintf('%s : saving body and loss ... \n', mfilename);
@@ -146,10 +154,16 @@ indent_cur = '';
     
     for layer_i=1:length(net_descr_)
         if isfield(net_descr_{layer_i}, 'name')
-            fprintf('Layer %d: name = %s ...\n', layer_i, net_descr_{layer_i}.name );
+            fprintf('Layer %d: name = %s : ', layer_i, net_descr_{layer_i}.name );
         else
-            fprintf('Layer %d ... \n', layer_i);
+            fprintf('Layer %d ... ', layer_i);
         end
+        bottom_str = net_descr_{layer_i}.bottom;
+        if iscell(bottom_str), bottom_str = strjoin(bottom_str, ','); end
+        top_str = net_descr_{layer_i}.top;
+        if iscell(top_str), top_str = strjoin(top_str, ','); end
+        fprintf('%s --> %s\n', bottom_str, top_str);
+        
         caffe_save_net_str( fileID, net_descr_{layer_i}, 'layer', indent, indent_cur);
     end
 

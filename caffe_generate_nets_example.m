@@ -82,7 +82,7 @@ net_descr.body{end+1} = caffe_layer_fc_def( block_indx , net_descr.body{end}.top
 
 %% --- Footer (losses and accuracies)
 % --- Train/Val
-net_descr.loss{1} = caffe_layer_accuracy_def( 'accuracy', net_descr.body{end}.top );
+net_descr.loss{1} = caffe_layer_accuracy_def( 'accuracy', {net_descr.body{end}.top, 'label'} );
 net_descr.loss{2} = caffe_layer_loss_def( 'loss', {net_descr.body{end}.top, 'label'} );
 
 % --- Deploy
