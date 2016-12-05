@@ -48,7 +48,8 @@ for line_i = 1:length(lines_nocom)
    name_val = strsplit(lines_nocom{line_i},':') ;
    val_processed = strtrim(name_val{2});
    val_processed = regexprep(val_processed,'[\"]','');
-   props.(name_val{1}) = val_processed;
+   name_processed = strtrim(name_val{1});
+   props.(name_processed) = val_processed;
 end
 
 %After done print the result
