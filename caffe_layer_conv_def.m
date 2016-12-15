@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_conv_def( name, varargin )
+function [ layer_str ] = caffe_layer_conv_def( name, bottom, kernel_size, num_output, add_mult, varargin)
 %% Description
 % Generates default Convolution layer values given layer name
 % --- INPUT:
@@ -8,7 +8,7 @@ function [ layer_str ] = caffe_layer_conv_def( name, varargin )
 %
 %% Execution
 %Name
-if isstr(name)
+if ischar(name)
     layer_str.name = name;
 else
     layer_str.name = sprintf('conv%d', name);
@@ -17,28 +17,32 @@ conv_name = 'Convolution';
 layer_str.type = conv_name;
 
 % Bottom layer
-var_i = 1;
-if length(varargin) >= var_i
-    layer_str.bottom = varargin{var_i};
-else
-    layer_str.bottom = 'data';
-end
-
+layer_str.bottom = bottom;
 layer_str.top = layer_str.name;
 
-layer_str.param{1}.lr_mult = 1;
-layer_str.param{1}.decay_mult = 1;
-layer_str.param{2}.lr_mult = 2;
-layer_str.param{2}.decay_mult = 0;
+if add_mult
+    layer_str.param{1}.lr_mult = 1;
+    layer_str.param{1}.decay_mult = 1;
+    layer_str.param{2}.lr_mult = 2;
+    layer_str.param{2}.decay_mult = 0;
+end
 
-layer_str.convolution_param.num_output = int32(128);
-layer_str.convolution_param.kernel_h = int32(3);
-layer_str.convolution_param.kernel_w = int32(3);
-layer_str.convolution_param.stride_h = int32(2);
-layer_str.convolution_param.stride_w = int32(2);
+layer_str.convolution_param.num_output = num_output;
+layer_str.convolution_param.kernel_size = kernel_size;
+
+for i_param = 1:2:length(varargin)
+    param_name = varargin{i_param};
+    param_value = varargin{i_param+1};
+    layer_str.convolution_param.(param_name) = param_value;
+    if isfield(layer_str.convolution_param, 'kernel_size') && ...
+            (strcmp(param_name, 'kernel_h') || strcmp(param_name, 'kernel_w'))
+        % remove kernel field
+        layer_str.convolution_param = rmfield(...
+            layer_str.convolution_param, 'kernel_size');
+    end
+end
 
 layer_str.convolution_param.weight_filler.type = 'xavier';
-
 layer_str.convolution_param.bias_filler.type   = 'constant';
 layer_str.convolution_param.bias_filler.value   = 0;
 
@@ -61,13 +65,8 @@ layer_str.convolution_param.bias_filler.value   = 0;
 %     kernel_w: 2
 %     stride_h: 1
 %     stride_w: 1
-%     #pad: 0
-%     #kernel_size: 2
-%     #stride: 1
-%     #group: 2
 %     weight_filler {
 %       type: "xavier"
-%       #std: 0.01
 %     }
 %     bias_filler {
 %       type: "constant"

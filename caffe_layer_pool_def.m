@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_pool_def( name, varargin )
+function [ layer_str ] = caffe_layer_pool_def( name, bottom, kernel_size, varargin )
 %% Description:
 % default initialization of the Pooling layer
 % --- INPUT:
@@ -16,21 +16,30 @@ end
 layer_str.type = 'Pooling';
 
 %Bottom
-var_i = 1;
-if length(varargin) >= var_i
-    layer_str.bottom = varargin{var_i};
-else
-    layer_str.bottom = sprintf('conv%d', name);
-end
-
+layer_str.bottom = bottom;
 layer_str.top = layer_str.name;
 
 layer_str.pooling_param.pool = 'MAX';
+layer_str.pooling_param.kernel_size = kernel_size;
+layer_str.pooling_param.stride = 1; % default stride
 
-layer_str.pooling_param.kernel_h = 2;
-layer_str.pooling_param.kernel_w = 2;
-layer_str.pooling_param.stride_h = 2;
-layer_str.pooling_param.stride_w = 2;
+for i_param = 1:2:length(varargin)
+    param_name = varargin{i_param};
+    param_value = varargin{i_param+1};
+    layer_str.pooling_param.(param_name) = param_value;
+    if isfield(layer_str.pooling_param, 'kernel_size') && ...
+            (strcmp(param_name, 'kernel_h') || strcmp(param_name, 'kernel_w'))
+        % remove kernel field
+        layer_str.pooling_param = rmfield(...
+            layer_str.pooling_param, 'kernel_size');
+    end
+    if isfield(layer_str.pooling_param, 'stride') && ...
+            (strcmp(param_name, 'stride_h') || strcmp(param_name, 'stride_w'))
+        % remove kernel field
+        layer_str.pooling_param = rmfield(...
+            layer_str.pooling_param, 'stride');
+    end
+end
 
 % layer {
 %   name: "pool0"

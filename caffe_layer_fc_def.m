@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_fc_def( name, varargin )
+function [ layer_str ] = caffe_layer_fc_def( name, bottom, num_output, use_mult, varargin )
 %% Description:
 % default initialization of the InnerProduct (fully connected) layer
 % --- INPUT:
@@ -13,23 +13,20 @@ else
 end
 layer_str.type = 'InnerProduct';
 
-var_i = 1;
-if length(varargin) >= var_i
-    layer_str.bottom = varargin{var_i};
-else
-    layer_str.bottom = sprintf('conv%d', max(name - 1, 0 ) );
-end
-    
+layer_str.bottom = bottom;
 layer_str.top = layer_str.name;
 
-layer_str.param{1}.lr_mult = 1;
-layer_str.param{1}.decay_mult = 1;
-layer_str.param{2}.lr_mult = 2;
-layer_str.param{2}.decay_mult = 0;
+if use_mult
+    layer_str.param{1}.lr_mult = 1;
+    layer_str.param{1}.decay_mult = 1;
+    layer_str.param{2}.lr_mult = 2;
+    layer_str.param{2}.decay_mult = 0;
+end
 
-layer_str.inner_product_param.num_output = 256;
+layer_str.inner_product_param.num_output = num_output;
 
-layer_str.inner_product_param.weight_filler.type = 'xavier';
+layer_str.inner_product_param.weight_filler.type = 'gaussian';
+layer_str.inner_product_param.weight_filler.std = 0.001;
 
 layer_str.inner_product_param.bias_filler.type   = 'constant';
 layer_str.inner_product_param.bias_filler.value   = 0;

@@ -1,4 +1,4 @@
-function [ layer_str ] = caffe_layer_relu_def( indx, bottom )
+function [ layer_str ] = caffe_layer_relu_def( name, bottom )
 %% Description:
 % default initialization of the ReLU layer
 % --- INPUT:
@@ -7,7 +7,12 @@ function [ layer_str ] = caffe_layer_relu_def( indx, bottom )
 % layer_str = structure describing a layer
 %
 %% Execution
-layer_str.name = sprintf('relu%d', indx);
+if isstr(name)
+    layer_str.name = name;
+else
+    layer_str.name = sprintf('relu%d', name);
+end
+
 layer_str.type = 'ReLU';
 layer_str.bottom = bottom;
 layer_str.top = layer_str.bottom;

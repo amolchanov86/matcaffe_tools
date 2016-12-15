@@ -40,123 +40,55 @@ net_descr.head_deploy.input_shape.dim{4} = 31;
 % }
 
 %% --- Body
-
 % --- Conv 0
-lay_indx = 0;%Index of every layer
-lay_indx = lay_indx + 1;
 block_indx = 0; %For every block of layers, example: {FC + ReLU + Dropout}  
-net_descr.body{lay_indx} = caffe_layer_conv_def( block_indx );
-net_descr.body{lay_indx}.bottom = 'data';
-net_descr.body{lay_indx}.convolution_param.num_output = 64;
-net_descr.body{lay_indx}.convolution_param.kernel_h = 1;
-net_descr.body{lay_indx}.convolution_param.kernel_w = 2;
-net_descr.body{lay_indx}.convolution_param.stride_h = 1;
-net_descr.body{lay_indx}.convolution_param.stride_w = 1;
+net_descr.body{1} = caffe_layer_conv_def( block_indx, 'data', -1, 64, true, ...
+    'kernel_h', 1, 'kernel_w', 2);
 
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr.body{lay_indx-1}.name );
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_pool_def( block_indx );
-net_descr.body{lay_indx}.pooling_param.kernel_h = 1;
-net_descr.body{lay_indx}.pooling_param.kernel_w = 2;
-net_descr.body{lay_indx}.pooling_param.stride_h = 1;
-net_descr.body{lay_indx}.pooling_param.stride_w = 2;
+net_descr.body{end+1} = caffe_layer_relu_def( block_indx,  net_descr.body{end}.top );
+net_descr.body{end+1} = caffe_layer_pool_def( block_indx, net_descr.body{end}.top, -1, ...
+    'kernel_h', 1, 'kernel_w', 2, 'stride_h', 1, 'stride_w', 2);
 
 % --- Conv 1
-lay_indx = lay_indx + 1;
 block_indx = block_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_conv_def( block_indx );
-net_descr.body{lay_indx}.bottom = sprintf('pool%d', block_indx - 1);
-net_descr.body{lay_indx}.convolution_param.num_output = 128;
-net_descr.body{lay_indx}.convolution_param.kernel_h = 1;
-net_descr.body{lay_indx}.convolution_param.kernel_w = 2;
-net_descr.body{lay_indx}.convolution_param.stride_h = 1;
-net_descr.body{lay_indx}.convolution_param.stride_w = 1;
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr.body{lay_indx-1}.name );
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_pool_def( block_indx );
-net_descr.body{lay_indx}.pooling_param.kernel_h = 1;
-net_descr.body{lay_indx}.pooling_param.kernel_w = 2;
-net_descr.body{lay_indx}.pooling_param.stride_h = 1;
-net_descr.body{lay_indx}.pooling_param.stride_w = 2;
+net_descr.body{end+1} = caffe_layer_conv_def( block_indx, net_descr.body{end}.top, -1, 128, true, ...
+    'kernel_h', 1, 'kernel_w', 2);
+net_descr.body{end+1} = caffe_layer_relu_def( block_indx,  net_descr.body{end}.top );
+net_descr.body{end+1} = caffe_layer_pool_def( block_indx,  net_descr.body{end}.top, -1, ...
+    'kernel_h', 1, 'kernel_w', 2, 'stride_h', 1, 'stride_w', 2);
 
 % --- Conv 2
-lay_indx = lay_indx + 1;
 block_indx = block_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_conv_def( block_indx );
-net_descr.body{lay_indx}.bottom = sprintf('pool%d', block_indx - 1);
-net_descr.body{lay_indx}.convolution_param.num_output = 128;
-net_descr.body{lay_indx}.convolution_param.kernel_h = 1;
-net_descr.body{lay_indx}.convolution_param.kernel_w = 2;
-net_descr.body{lay_indx}.convolution_param.stride_h = 1;
-net_descr.body{lay_indx}.convolution_param.stride_w = 1;
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr.body{lay_indx-1}.name );
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_pool_def( block_indx );
-net_descr.body{lay_indx}.pooling_param.kernel_h = 1;
-net_descr.body{lay_indx}.pooling_param.kernel_w = 2;
-net_descr.body{lay_indx}.pooling_param.stride_h = 1;
-net_descr.body{lay_indx}.pooling_param.stride_w = 2;
+net_descr.body{end+1} = caffe_layer_conv_def( block_indx, net_descr.body{end}.top, -1, 128, true, ...
+    'kernel_h', 1, 'kernel_w', 2);
+net_descr.body{end+1} = caffe_layer_relu_def( block_indx, net_descr.body{end}.top );
+net_descr.body{end+1} = caffe_layer_pool_def( block_indx, net_descr.body{end}.top , -1, ...
+    'kernel_h', 1, 'kernel_w', 2, 'stride_h', 1, 'stride_w', 2);
 
 % --- Conv 3
-lay_indx = lay_indx + 1;
 block_indx = block_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_conv_def( block_indx );
-net_descr.body{lay_indx}.bottom = sprintf('pool%d', block_indx - 1);
-net_descr.body{lay_indx}.convolution_param.num_output = 128;
-net_descr.body{lay_indx}.convolution_param.kernel_h = 57;
-net_descr.body{lay_indx}.convolution_param.kernel_w = 1;
-net_descr.body{lay_indx}.convolution_param.stride_h = 1;
-net_descr.body{lay_indx}.convolution_param.stride_w = 1;
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr.body{lay_indx-1}.name );
+net_descr.body{end+1} = caffe_layer_conv_def( block_indx, net_descr.body{end}.top, -1, 128, true, ...
+    'kernel_h', 57, 'kernel_w', 1);
+net_descr.body{end+1} = caffe_layer_relu_def( block_indx,  net_descr.body{end}.top );
 
 % --- FC 4
-lay_indx = lay_indx + 1;
-block_indx = block_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_fc_def( block_indx );
-net_descr.body{lay_indx}.bottom = sprintf('conv%d', block_indx - 1);
-net_descr.body{lay_indx}.inner_product_param.num_output = 256;
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_relu_def( block_indx,  net_descr.body{lay_indx-1}.name );
-
-lay_indx = lay_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_drop_def( block_indx );
+net_descr.body{end+1} = caffe_layer_fc_def( block_indx, net_descr.body{end}.name, 256, true);
+net_descr.body{end+1} = caffe_layer_relu_def( block_indx,  net_descr.body{end}.top );
+net_descr.body{end+1} = caffe_layer_drop_def( block_indx );
 
 % --- FC 5
-lay_indx = lay_indx + 1;
 block_indx = block_indx + 1;
-net_descr.body{lay_indx} = caffe_layer_fc_def( block_indx );
-net_descr.body{lay_indx}.bottom = sprintf('fc%d', block_indx - 1);
-net_descr.body{lay_indx}.inner_product_param.num_output = 256;
+net_descr.body{end+1} = caffe_layer_fc_def( block_indx , net_descr.body{end}.top, 256, true);
 
 %% --- Footer (losses and accuracies)
 % --- Train/Val
-loss_indx = 0;
-loss_indx = loss_indx + 1;
-net_descr.loss{loss_indx} = caffe_layer_accuracy_def( net_descr.body{end}.top );
-
-loss_indx = loss_indx + 1;
-net_descr.loss{loss_indx} = caffe_layer_loss_def( net_descr.body{end}.top );
+net_descr.loss{1} = caffe_layer_accuracy_def( 'accuracy', {net_descr.body{end}.top, 'label'} );
+net_descr.loss{2} = caffe_layer_loss_def( 'loss', {net_descr.body{end}.top, 'label'} );
 
 % --- Deploy
-loss_indx = 0;
-loss_indx = loss_indx + 1;
-net_descr.loss_deploy{loss_indx} = caffe_layer_loss_def( net_descr.body{end}.top );
-net_descr.loss_deploy{loss_indx}.name = 'prob';
-net_descr.loss_deploy{loss_indx}.type = 'Softmax';
-net_descr.loss_deploy{loss_indx}.bottom = net_descr.body{end}.top;
+net_descr.loss_deploy{1} = caffe_layer_loss_def( 'prob', net_descr.body{end}.top );
+net_descr.loss_deploy{1}.type = 'Softmax';
 
 %% Saving the whole thing
 % caffe_save_net( net_filename, net_header, net_descr.body );
 caffe_generate_nets(net_filename, net_descr);
-
